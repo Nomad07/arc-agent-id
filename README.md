@@ -1,4 +1,3 @@
-cat > README.md <<'EOF'
 # Arc Agent ID
 
 A lightweight Python tool for working with AI agent identities on the Arc network using ERC-8004.
@@ -43,4 +42,3 @@ The current repository contains the initial project structure. ERC-8004 identity
 ## License
 
 MIT License
-EOF
