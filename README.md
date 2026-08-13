@@ -1,6 +1,6 @@
 # Arc Agent ID
 
-A lightweight Python toolkit for interacting with AI agent identities on Arc Testnet using ERC-8004.
+A Python toolkit for registering and checking AI agent identities on Arc Testnet using ERC-8004.
 
 ## Features
 
