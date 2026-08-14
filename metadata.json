@@ -1,0 +1,10 @@
+{
+  "name": "Arc Agent ID",
+  "description": "An experimental AI agent identity toolkit built with Python and ERC-8004 on Arc Testnet.",
+  "services": [
+    {
+      "name": "Arc Agent ID Toolkit",
+      "endpoint": "https://github.com/Nomad07/arc-agent-id"
+    }
+  ]
+}

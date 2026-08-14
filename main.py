@@ -46,6 +46,24 @@ IDENTITY_ABI = [
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "agentId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "newURI",
+                "type": "string"
+            }
+        ],
+        "name": "setAgentURI",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "tokenId",
                 "type": "uint256"
             }
@@ -103,6 +121,31 @@ IDENTITY_ABI = [
             }
         ],
         "name": "Transfer",
+        "type": "event"
+    },
+    {
+        "anonymous": False,
+        "inputs": [
+            {
+                "indexed": True,
+                "internalType": "uint256",
+                "name": "agentId",
+                "type": "uint256"
+            },
+            {
+                "indexed": False,
+                "internalType": "string",
+                "name": "newURI",
+                "type": "string"
+            },
+            {
+                "indexed": True,
+                "internalType": "address",
+                "name": "updatedBy",
+                "type": "address"
+            }
+        ],
+        "name": "URIUpdated",
         "type": "event"
     }
 ]
@@ -368,6 +411,203 @@ def register_agent(
     )
 
 
+def update_agent_metadata(
+    web3,
+    account
+):
+
+    contract = get_contract(web3)
+
+    print()
+    print(
+        "========================================"
+    )
+    print(
+        "UPDATE ERC-8004 AGENT METADATA"
+    )
+    print(
+        "========================================"
+    )
+    print()
+
+    agent_id_input = input(
+        "Enter Agent ID: "
+    ).strip()
+
+    if not agent_id_input.isdigit():
+
+        print(
+            "Invalid Agent ID."
+        )
+        return
+
+    agent_id = int(agent_id_input)
+
+    try:
+
+        owner = contract.functions.ownerOf(
+            agent_id
+        ).call()
+
+        current_uri = contract.functions.tokenURI(
+            agent_id
+        ).call()
+
+    except Exception as error:
+
+        print()
+        print(
+            f"Could not read agent {agent_id}:"
+        )
+        print(
+            error
+        )
+        return
+
+    if owner.lower() != account.address.lower():
+
+        print()
+        print(
+            "You are not the owner of this agent."
+        )
+        print(
+            f"Agent owner:    {owner}"
+        )
+        print(
+            f"Connected wallet: {account.address}"
+        )
+        return
+
+    print()
+    print(
+        f"Agent ID:     {agent_id}"
+    )
+    print(
+        f"Current URI:  {current_uri}"
+    )
+    print()
+
+    new_uri = input(
+        "Enter new Metadata URI: "
+    ).strip()
+
+    if not new_uri:
+
+        print(
+            "Metadata URI cannot be empty."
+        )
+        return
+
+    if new_uri == current_uri:
+
+        print(
+            "New URI is the same as the current URI."
+        )
+        return
+
+    print()
+    print(
+        f"New URI:      {new_uri}"
+    )
+    print()
+
+    confirmation = input(
+        "Update metadata? (y/n): "
+    ).strip().lower()
+
+    if confirmation != "y":
+
+        print(
+            "Update cancelled."
+        )
+        return
+
+    nonce = web3.eth.get_transaction_count(
+        account.address
+    )
+
+    transaction = contract.functions.setAgentURI(
+        agent_id,
+        new_uri
+    ).build_transaction(
+        {
+            "from": account.address,
+            "nonce": nonce,
+            "chainId": CHAIN_ID,
+            "gas": 300000,
+            "gasPrice": web3.eth.gas_price,
+        }
+    )
+
+    signed_transaction = account.sign_transaction(
+        transaction
+    )
+
+    print()
+    print(
+        "Sending metadata update transaction..."
+    )
+
+    tx_hash = web3.eth.send_raw_transaction(
+        signed_transaction.raw_transaction
+    )
+
+    print()
+    print(
+        f"Transaction: {tx_hash.hex()}"
+    )
+    print()
+    print(
+        "Waiting for confirmation..."
+    )
+
+    receipt = web3.eth.wait_for_transaction_receipt(
+        tx_hash
+    )
+
+    if receipt.status != 1:
+
+        raise RuntimeError(
+            "Metadata update transaction failed"
+        )
+
+    print()
+    print(
+        "========================================"
+    )
+    print(
+        "METADATA UPDATED"
+    )
+    print(
+        "========================================"
+    )
+    print()
+    print(
+        f"Agent ID:     {agent_id}"
+    )
+    print(
+        f"Old URI:      {current_uri}"
+    )
+    print(
+        f"New URI:      {new_uri}"
+    )
+    print(
+        f"Tx Hash:      {tx_hash.hex()}"
+    )
+    print(
+        f"Block:        {receipt.blockNumber}"
+    )
+    print()
+    print(
+        f"https://testnet.arcscan.app/tx/"
+        f"{tx_hash.hex()}"
+    )
+    print()
+    print(
+        "========================================"
+    )
+
+
 def show_menu():
 
     print()
@@ -391,7 +631,10 @@ def show_menu():
         "2. Register new agent"
     )
     print(
-        "3. Exit"
+        "3. Update agent metadata"
+    )
+    print(
+        "4. Exit"
     )
     print()
 
@@ -404,7 +647,7 @@ def main():
 
         print()
         print(
-            f"Connected to Arc Testnet"
+            "Connected to Arc Testnet"
         )
         print(
             f"Chain ID: {web3.eth.chain_id}"
@@ -449,6 +692,17 @@ def main():
 
             elif choice == "3":
 
+                account = get_account(
+                    web3
+                )
+
+                update_agent_metadata(
+                    web3,
+                    account
+                )
+
+            elif choice == "4":
+
                 print(
                     "Goodbye."
                 )
@@ -479,5 +733,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()
