@@ -212,7 +212,7 @@ Status:         Confirmed
 
 The validation request can be viewed on ArcScan:
 
-https://testnet.arcscan.app/tx/38f8d416fa52af8eacf462b3f946d548da1c6e95b6118263128914cd5c2d1f80
+https://testnet.arcscan.app/tx/0x38f8d416fa52af8eacf462b3f946d548da1c6e95b6118263128914cd5c2d1f80
 
 The request is currently awaiting a validation response.
 
