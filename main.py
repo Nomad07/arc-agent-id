@@ -600,7 +600,7 @@ def check_agent(
     )
     print()
     print(
-        "Network:      Arc Testnet"
+        f"Network:      {'Arc Mainnet' if NETWORK == 'mainnet' else 'Arc Testnet'}"
     )
     print(
         f"Chain ID:     {web3.eth.chain_id}"
