@@ -7,10 +7,10 @@ from web3 import Web3
 load_dotenv()
 
 
-RPC_URL = os.getenv(
-    "RPC_URL",
-    "https://rpc.testnet.arc.network"
-)
+NETWORK = os.getenv(
+    "NETWORK",
+    "testnet"
+).lower()
 
 PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 
@@ -21,19 +21,49 @@ METADATA_URI = os.getenv(
 
 AGENT_ID = os.getenv("AGENT_ID")
 
-CHAIN_ID = 5042002
 
+NETWORKS = {
+    "testnet": {
+        "rpc_url": "https://rpc.testnet.arc.network",
+        "chain_id": 5042002,
+        "identity_registry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+        "reputation_registry": "0x8004B663056A597Dffe9eCcC1965A193B7388713",
+        "validation_registry": "0x8004Cb1BF31DAf7788923b405b754f57acEB4272",
+    },
+    "mainnet": {
+        "rpc_url": "https://rpc.mainnet.arc.io",
+        "chain_id": 5042,
+        "identity_registry": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
+        "reputation_registry": "0x8004BAa17C55a88189AE136b182e5fdA19dE9b63",
+        "validation_registry": None,
+    },
+}
+
+if NETWORK not in NETWORKS:
+    raise RuntimeError(
+        f"Unsupported network: {NETWORK}. "
+        f"Use testnet or mainnet."
+    )
+
+NETWORK_CONFIG = NETWORKS[NETWORK]
+
+RPC_URL = NETWORK_CONFIG["rpc_url"]
+CHAIN_ID = NETWORK_CONFIG["chain_id"]
 
 IDENTITY_REGISTRY = Web3.to_checksum_address(
-    "0x8004A818BFB912233c491871b3d84c89A494BD9e"
+    NETWORK_CONFIG["identity_registry"]
 )
 
 REPUTATION_REGISTRY = Web3.to_checksum_address(
-    "0x8004B663056A597Dffe9eCcC1965A193B7388713"
+    NETWORK_CONFIG["reputation_registry"]
 )
 
-VALIDATION_REGISTRY = Web3.to_checksum_address(
-    "0x8004Cb1BF31DAf7788923b405b754f57acEB4272"
+VALIDATION_REGISTRY = (
+    Web3.to_checksum_address(
+        NETWORK_CONFIG["validation_registry"]
+    )
+    if NETWORK_CONFIG["validation_registry"]
+    else None
 )
 
 
