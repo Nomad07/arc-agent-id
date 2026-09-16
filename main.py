@@ -1211,7 +1211,7 @@ def register_agent(
     )
     print()
     print(
-        "Network:  Arc Testnet"
+        f"Network:  {'Arc Mainnet' if NETWORK == 'mainnet' else 'Arc Testnet'}"
     )
     print(
         f"Chain ID: {web3.eth.chain_id}"
@@ -1332,8 +1332,14 @@ def register_agent(
         f"Block:    {receipt.blockNumber}"
     )
     print()
+    explorer_url = (
+        "https://arcscan.app/tx/"
+        if NETWORK == "mainnet"
+        else "https://testnet.arcscan.app/tx/"
+    )
+
     print(
-        f"https://testnet.arcscan.app/tx/"
+        f"{explorer_url}"
         f"{tx_hash.hex()}"
     )
     print()
