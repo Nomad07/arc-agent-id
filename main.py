@@ -1535,8 +1535,13 @@ def update_agent_metadata(
         f"Block:        {receipt.blockNumber}"
     )
     print()
+    explorer_url = (
+        "https://arcscan.app/tx/"
+        if NETWORK == "mainnet"
+        else "https://testnet.arcscan.app/tx/"
+    )
     print(
-        f"https://testnet.arcscan.app/tx/"
+        f"{explorer_url}"
         f"{tx_hash.hex()}"
     )
     print()
