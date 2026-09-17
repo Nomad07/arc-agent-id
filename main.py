@@ -7,10 +7,10 @@ from web3 import Web3
 load_dotenv()
 
 
-RPC_URL = os.getenv(
-    "RPC_URL",
-    "https://rpc.testnet.arc.network"
-)
+NETWORK = os.getenv(
+    "NETWORK",
+    "testnet"
+).lower()
 
 PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 
@@ -21,19 +21,49 @@ METADATA_URI = os.getenv(
 
 AGENT_ID = os.getenv("AGENT_ID")
 
-CHAIN_ID = 5042002
 
+NETWORKS = {
+    "testnet": {
+        "rpc_url": "https://rpc.testnet.arc.network",
+        "chain_id": 5042002,
+        "identity_registry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+        "reputation_registry": "0x8004B663056A597Dffe9eCcC1965A193B7388713",
+        "validation_registry": "0x8004Cb1BF31DAf7788923b405b754f57acEB4272",
+    },
+    "mainnet": {
+        "rpc_url": "https://rpc.mainnet.arc.io",
+        "chain_id": 5042,
+        "identity_registry": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
+        "reputation_registry": "0x8004BAa17C55a88189AE136b182e5fdA19dE9b63",
+        "validation_registry": None,
+    },
+}
+
+if NETWORK not in NETWORKS:
+    raise RuntimeError(
+        f"Unsupported network: {NETWORK}. "
+        f"Use testnet or mainnet."
+    )
+
+NETWORK_CONFIG = NETWORKS[NETWORK]
+
+RPC_URL = NETWORK_CONFIG["rpc_url"]
+CHAIN_ID = NETWORK_CONFIG["chain_id"]
 
 IDENTITY_REGISTRY = Web3.to_checksum_address(
-    "0x8004A818BFB912233c491871b3d84c89A494BD9e"
+    NETWORK_CONFIG["identity_registry"]
 )
 
 REPUTATION_REGISTRY = Web3.to_checksum_address(
-    "0x8004B663056A597Dffe9eCcC1965A193B7388713"
+    NETWORK_CONFIG["reputation_registry"]
 )
 
-VALIDATION_REGISTRY = Web3.to_checksum_address(
-    "0x8004Cb1BF31DAf7788923b405b754f57acEB4272"
+VALIDATION_REGISTRY = (
+    Web3.to_checksum_address(
+        NETWORK_CONFIG["validation_registry"]
+    )
+    if NETWORK_CONFIG["validation_registry"]
+    else None
 )
 
 
@@ -570,7 +600,7 @@ def check_agent(
     )
     print()
     print(
-        "Network:      Arc Testnet"
+        f"Network:      {'Arc Mainnet' if NETWORK == 'mainnet' else 'Arc Testnet'}"
     )
     print(
         f"Chain ID:     {web3.eth.chain_id}"
@@ -725,6 +755,17 @@ def check_validation(
     agent_id
 ):
 
+    if VALIDATION_REGISTRY is None:
+        print()
+        print(
+            "Validation Registry is not configured for Arc Mainnet."
+        )
+        print(
+            "Validation checks are currently available on Arc Testnet only."
+        )
+        print()
+        return
+
     contract = get_validation_contract(web3)
 
     print()
@@ -875,6 +916,17 @@ def submit_validation_request(
     web3,
     account
 ):
+
+    if VALIDATION_REGISTRY is None:
+        print()
+        print(
+            "Validation Registry is not configured for Arc Mainnet."
+        )
+        print(
+            "Validation requests are currently available on Arc Testnet only."
+        )
+        print()
+        return
 
     contract = get_validation_contract(web3)
 
@@ -1159,7 +1211,7 @@ def register_agent(
     )
     print()
     print(
-        "Network:  Arc Testnet"
+        f"Network:  {'Arc Mainnet' if NETWORK == 'mainnet' else 'Arc Testnet'}"
     )
     print(
         f"Chain ID: {web3.eth.chain_id}"
@@ -1280,8 +1332,14 @@ def register_agent(
         f"Block:    {receipt.blockNumber}"
     )
     print()
+    explorer_url = (
+        "https://arcscan.app/tx/"
+        if NETWORK == "mainnet"
+        else "https://testnet.arcscan.app/tx/"
+    )
+
     print(
-        f"https://testnet.arcscan.app/tx/"
+        f"{explorer_url}"
         f"{tx_hash.hex()}"
     )
     print()
@@ -1477,8 +1535,13 @@ def update_agent_metadata(
         f"Block:        {receipt.blockNumber}"
     )
     print()
+    explorer_url = (
+        "https://arcscan.app/tx/"
+        if NETWORK == "mainnet"
+        else "https://testnet.arcscan.app/tx/"
+    )
     print(
-        f"https://testnet.arcscan.app/tx/"
+        f"{explorer_url}"
         f"{tx_hash.hex()}"
     )
     print()
@@ -1527,15 +1590,98 @@ def show_menu():
     print()
 
 
+def select_network():
+
+    global NETWORK
+    global NETWORK_CONFIG
+    global RPC_URL
+    global CHAIN_ID
+    global IDENTITY_REGISTRY
+    global REPUTATION_REGISTRY
+    global VALIDATION_REGISTRY
+
+    print()
+    print(
+        "Select network:"
+    )
+    print()
+    print(
+        "1. Arc Testnet"
+    )
+    print(
+        "2. Arc Mainnet"
+    )
+    print(
+        "3. Exit"
+    )
+    print()
+
+    while True:
+
+        choice = input(
+            "Select network: "
+        ).strip()
+
+        if choice == "1":
+
+            NETWORK = "testnet"
+
+        elif choice == "2":
+
+            NETWORK = "mainnet"
+
+        elif choice == "3":
+
+            return False
+
+        else:
+
+            print(
+                "Invalid option."
+            )
+            continue
+
+        NETWORK_CONFIG = NETWORKS[NETWORK]
+
+        RPC_URL = NETWORK_CONFIG["rpc_url"]
+        CHAIN_ID = NETWORK_CONFIG["chain_id"]
+
+        IDENTITY_REGISTRY = Web3.to_checksum_address(
+            NETWORK_CONFIG["identity_registry"]
+        )
+
+        REPUTATION_REGISTRY = Web3.to_checksum_address(
+            NETWORK_CONFIG["reputation_registry"]
+        )
+
+        VALIDATION_REGISTRY = (
+            Web3.to_checksum_address(
+                NETWORK_CONFIG["validation_registry"]
+            )
+            if NETWORK_CONFIG["validation_registry"]
+            else None
+        )
+
+        return True
+
+
 def main():
 
     try:
+
+        if not select_network():
+
+            print(
+                "Goodbye."
+            )
+            return
 
         web3 = connect_to_arc()
 
         print()
         print(
-            "Connected to Arc Testnet"
+            f"Connected to Arc "
+            f"{'Mainnet' if NETWORK == 'mainnet' else 'Testnet'}"
         )
         print(
             f"Chain ID: {web3.eth.chain_id}"
@@ -1608,6 +1754,18 @@ def main():
                 )
 
             elif choice == "5":
+
+                if VALIDATION_REGISTRY is None:
+
+                    print()
+                    print(
+                        "Validation Registry is not configured for Arc Mainnet."
+                    )
+                    print(
+                        "Validation checks are currently available on Arc Testnet only."
+                    )
+                    print()
+                    continue
 
                 agent_id = input(
                     "Enter Agent ID: "
