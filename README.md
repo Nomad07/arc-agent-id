@@ -2,11 +2,11 @@
 
 A Python toolkit for interacting with AI agent identities on Arc using ERC-8004.
 
-The project supports both **Arc Testnet** and **Arc Mainnet** with separate agent identities and network-specific registries.
+The project supports both **Arc Mainnet** and **Arc Testnet** with separate agent identities and network-specific registries.
 
 ## Features
 
-* Connect to Arc Testnet or Arc Mainnet
+* Connect to Arc Mainnet or Arc Testnet
 * Switch between networks
 * Register ERC-8004 agents
 * Check existing Agent IDs
@@ -82,6 +82,50 @@ After selecting a network, the toolkit provides:
 7. Exit
 ```
 
+## Arc Mainnet
+
+A separate ERC-8004 agent was registered on Arc Mainnet after the public Mainnet launch.
+
+```text
+Agent ID: 15
+Chain ID: 5042
+```
+
+The Mainnet agent has its own identity and metadata and is separate from the Testnet agent.
+
+### Mainnet capabilities
+
+* Agent registration
+* Agent ownership checks
+* Metadata updates
+* Reputation queries
+
+The Mainnet agent was registered successfully and its metadata was later updated onchain.
+
+Mainnet RPC:
+
+```text
+https://rpc.mainnet.arc.io
+```
+
+Mainnet Identity Registry:
+
+```text
+0x8004A169FB4a3325136EB29fA0ceB6D2e539a432
+```
+
+Mainnet Reputation Registry:
+
+```text
+0x8004BAa17C55a88189AE136b182e5fdA19dE9b63
+```
+
+Mainnet validation is not currently configured because a confirmed Mainnet Validation Registry address is not included in the toolkit.
+
+Mainnet explorer:
+
+https://explorer.arc.io
+
 ## Arc Testnet
 
 The original ERC-8004 agent is deployed on Arc Testnet.
@@ -128,66 +172,26 @@ Testnet Validation Registry:
 0x8004Cb1BF31DAf7788923b405b754f57acEB4272
 ```
 
-## Arc Mainnet
-
-A separate ERC-8004 agent was registered on Arc Mainnet after the public Mainnet launch.
-
-```text
-Agent ID: 15
-Chain ID: 5042
-```
-
-The Mainnet agent has its own identity and metadata and is separate from the Testnet agent.
-
-### Mainnet capabilities
-
-* Agent registration
-* Agent ownership checks
-* Metadata updates
-* Reputation queries
-
-The Mainnet agent was registered successfully and its metadata was later updated onchain.
-
-Mainnet RPC:
-
-```text
-https://rpc.mainnet.arc.io
-```
-
-Mainnet Identity Registry:
-
-```text
-0x8004A169FB4a3325136EB29fA0ceB6D2e539a432
-```
-
-Mainnet Reputation Registry:
-
-```text
-0x8004BAa17C55a88189AE136b182e5fdA19dE9b63
-```
-
-Mainnet validation is not currently configured because a confirmed Mainnet Validation Registry address is not included in the toolkit.
-
-Mainnet explorer:
-
-https://explorer.arc.io
-
 ## ERC-8004
 
 ERC-8004 provides onchain identity infrastructure for AI agents.
 
 This project explores how agent identities, metadata, reputation and validation can be managed through ERC-8004 on Arc.
 
-The toolkit keeps Testnet and Mainnet agents separate while providing the same core workflow across both networks.
+The toolkit keeps Mainnet and Testnet agents separate while providing the same core workflow across both networks.
 
 ## Project Status
 
 Current verified agents:
 
 ```text
+Arc Mainnet → Agent #15
 Arc Testnet  → Agent #876991
-Arc Mainnet  → Agent #15
 ```
+
+The Mainnet agent is registered and its metadata has been successfully updated onchain.
+
+The Testnet agent remains active with existing validation functionality.
 
 The next area of exploration is connecting validation responses and reputation feedback into a more complete ERC-8004 agent identity workflow.
 
