@@ -65,8 +65,8 @@ python main.py
 The application starts with network selection:
 
 ```text
-1. Arc Testnet
-2. Arc Mainnet
+1. Arc Mainnet
+2. Arc Testnet
 3. Exit
 ```
 
