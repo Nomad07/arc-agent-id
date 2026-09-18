@@ -1606,10 +1606,10 @@ def select_network():
     )
     print()
     print(
-        "1. Arc Testnet"
+        "1. Arc Mainnet"
     )
     print(
-        "2. Arc Mainnet"
+        "2. Arc Testnet"
     )
     print(
         "3. Exit"
@@ -1624,11 +1624,11 @@ def select_network():
 
         if choice == "1":
 
-            NETWORK = "testnet"
+            NETWORK = "mainnet"
 
         elif choice == "2":
 
-            NETWORK = "mainnet"
+            NETWORK = "testnet"
 
         elif choice == "3":
 
